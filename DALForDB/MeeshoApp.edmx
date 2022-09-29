@@ -1,0 +1,150 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl" Namespace="MeeshoApp.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2005">
+        <EntityContainer Name="MeeshoAppTargetContainer" >
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema xmlns="http://schemas.microsoft.com/ado/2009/11/edm" xmlns:cg="http://schemas.microsoft.com/ado/2006/04/codegeneration" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" Namespace="MeeshoApp" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" annotation:UseStrongSpatialTypes="false">
+        <EntityContainer Name="MeeshoAppContainer" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Customers" EntityType="MeeshoApp.Customer" />
+          <EntitySet Name="Products" EntityType="MeeshoApp.Product" />
+          <EntitySet Name="OrderDetails" EntityType="MeeshoApp.OrderDetail" />
+          <AssociationSet Name="ProductOrderDetail" Association="MeeshoApp.ProductOrderDetail">
+            <End Role="Product" EntitySet="Products" />
+            <End Role="OrderDetail" EntitySet="OrderDetails" />
+          </AssociationSet>
+          <AssociationSet Name="CustomerOrderDetail" Association="MeeshoApp.CustomerOrderDetail">
+            <End Role="Customer" EntitySet="Customers" />
+            <End Role="OrderDetail" EntitySet="OrderDetails" />
+          </AssociationSet>
+          <EntitySet Name="Suppliers" EntityType="MeeshoApp.Supplier" />
+          <AssociationSet Name="SupplierProduct" Association="MeeshoApp.SupplierProduct">
+            <End Role="Supplier" EntitySet="Suppliers" />
+            <End Role="Product" EntitySet="Products" />
+          </AssociationSet>
+          <AssociationSet Name="CustomerProduct" Association="MeeshoApp.CustomerProduct">
+            <End Role="Customer" EntitySet="Customers" />
+            <End Role="Product" EntitySet="Products" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Customer">
+          <Key>
+            <PropertyRef Name="CustId" />
+          </Key>
+          <Property Name="CustId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Custname" Type="String" Nullable="false" />
+          <Property Name="BirthDate" Type="DateTime" Nullable="false" />
+          <Property Name="CustAddress" Type="MeeshoApp.Address" Nullable="false" />
+          <NavigationProperty Name="OrderDetails" Relationship="MeeshoApp.CustomerOrderDetail" FromRole="Customer" ToRole="OrderDetail" />
+          <NavigationProperty Name="Products" Relationship="MeeshoApp.CustomerProduct" FromRole="Customer" ToRole="Product" />
+        </EntityType>
+        <ComplexType Name="Address" >
+          <Property Type="Int32" Name="StreetNo" Nullable="false" />
+          <Property Type="String" Name="StreetName" Nullable="false" />
+          <Property Type="String" Name="City" Nullable="false" />
+          <Property Type="String" Name="State" Nullable="false" />
+          <Property Type="String" Name="Country" Nullable="false" />
+        </ComplexType>
+        <EntityType Name="Product">
+          <Key>
+            <PropertyRef Name="ProdId" />
+          </Key>
+          <Property Name="ProdId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Prodname" Type="String" Nullable="false" />
+          <Property Name="Price" Type="Single" Nullable="false" />
+          <Property Name="Fabric" Type="String" Nullable="false" />
+          <NavigationProperty Name="OrderDetails" Relationship="MeeshoApp.ProductOrderDetail" FromRole="Product" ToRole="OrderDetail" />
+          <NavigationProperty Name="Supplier" Relationship="MeeshoApp.SupplierProduct" FromRole="Product" ToRole="Supplier" />
+          <NavigationProperty Name="Customer" Relationship="MeeshoApp.CustomerProduct" FromRole="Product" ToRole="Customer" />
+          <Property Name="CustomerCustId" Type="Int32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="OrderDetail">
+          <Key>
+            <PropertyRef Name="OrderId" />
+          </Key>
+          <Property Name="OrderId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="OrderDate" Type="DateTime" Nullable="false" />
+          <NavigationProperty Name="Products" Relationship="MeeshoApp.ProductOrderDetail" FromRole="OrderDetail" ToRole="Product" />
+          <Property Name="CustomerCustId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Customer" Relationship="MeeshoApp.CustomerOrderDetail" FromRole="OrderDetail" ToRole="Customer" />
+          <Property Name="CustomerCustId1" Type="Int32" Nullable="false" />
+        </EntityType>
+        <Association Name="ProductOrderDetail">
+          <End Type="MeeshoApp.Product" Role="Product" Multiplicity="*" />
+          <End Type="MeeshoApp.OrderDetail" Role="OrderDetail" Multiplicity="*" />
+        </Association>
+        <Association Name="CustomerOrderDetail">
+          <End Type="MeeshoApp.Customer" Role="Customer" Multiplicity="1" />
+          <End Type="MeeshoApp.OrderDetail" Role="OrderDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="CustId" />
+            </Principal>
+            <Dependent Role="OrderDetail">
+              <PropertyRef Name="CustomerCustId1" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Supplier">
+          <Key>
+            <PropertyRef Name="SuppId" />
+          </Key>
+          <Property Name="SuppId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SuppName" Type="String" Nullable="false" />
+          <Property Name="SuppAddress" Type="MeeshoApp.Address" Nullable="false" />
+          <NavigationProperty Name="Product" Relationship="MeeshoApp.SupplierProduct" FromRole="Supplier" ToRole="Product" />
+        </EntityType>
+        <Association Name="SupplierProduct">
+          <End Type="MeeshoApp.Supplier" Role="Supplier" Multiplicity="1" />
+          <End Type="MeeshoApp.Product" Role="Product" Multiplicity="1" />
+        </Association>
+        <Association Name="CustomerProduct">
+          <End Type="MeeshoApp.Customer" Role="Customer" Multiplicity="1" />
+          <End Type="MeeshoApp.Product" Role="Product" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="CustId" />
+            </Principal>
+            <Dependent Role="Product">
+              <PropertyRef Name="CustomerCustId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs" Space="C-S">
+        <Alias Key="Model" Value="MeeshoApp" />
+        <Alias Key="Target" Value="MeeshoApp.Store" />
+        <EntityContainerMapping CdmEntityContainer="MeeshoAppContainer" StorageEntityContainer="MeeshoAppTargetContainer">
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <edmx:Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </edmx:Connection>
+    <edmx:Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="True" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </edmx:Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
